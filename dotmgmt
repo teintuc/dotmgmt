@@ -1,0 +1,109 @@
+#!/bin/bash
+
+set -e
+set -o pipefail
+
+[[ ${DEBUG} ]] && set -x
+
+#Directories configuration
+REPODIR="${HOME}/.local/share/dotmgmt"
+WORKTREE="$HOME"
+
+# Log functions
+Error() {
+    echo >&2 "$(tput bold; tput setaf 1)ERROR: ${*}$(tput sgr0)"
+    exit 1
+}
+
+Warn() {
+    echo >&2 "$(tput setaf 3)WARNING: ${*}$(tput sgr0)"
+}
+
+Info() {
+    echo "$(tput setaf 2)${*}$(tput sgr0)"
+}
+
+__git() {
+	git --git-dir="${REPODIR}" --work-tree="${WORKTREE}" "${@}"
+}
+
+__gitadd() {
+	Info "Adding ${1}"
+	__git add $1
+}
+
+__gitcommit() {
+	Info "Commiting: ${filecommit}"
+	NOW=$(date +"%Y%m%d")
+	__git commit -m "${NOW}" "${1}"
+}
+
+__gitpush() {
+	Info "Pushing ..."
+	current_branch=$(__git branch | sed -n -e 's/^\* \(.*\)/\1/p')
+	__git push origin $current_branch
+}
+
+__runinitscripts() {
+	echo "runinitscripts"
+}
+
+init() {
+	[ $# == 1 ] || Error "Init [repository]"
+	local repo=$1
+	Info "Init dotfiles with ${repo}"
+	__git clone --bare "${repo}" "${REPODIR}"
+	__git config status.showUntrackedFiles no
+}
+
+add() {
+	[ $# == 1 ] || Error "Add [file]"
+	__gitadd $1
+	__gitcommit $1
+	__gitpush
+}
+
+update() {
+	__git checkout
+}
+
+status() {
+	__git status
+}
+
+commit() {
+	for filecommit in $(__git diff --name-only)
+	do
+		__gitcommit $filecommit
+	done
+	__gitpush
+	Info "Done..."
+}
+
+usage() {
+	Warn "Command not found"
+}
+
+[ "${#}" == 0 ] && usage
+cmd=$1
+shift
+case $cmd in
+	init)
+		init "${@}"
+	;;
+	add)
+		add "${@}"
+	;;
+	update)
+		update
+	;;
+	commit)
+		commit "${@}"
+	;;
+	status)
+		status
+	;;
+	*)
+		usage
+	;;
+esac
