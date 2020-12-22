@@ -33,9 +33,10 @@ __gitadd() {
 }
 
 __gitcommit() {
+	local filecommit=$1
 	Info "Commiting: ${filecommit}"
 	NOW=$(date +"%Y%m%d")
-	__git commit -m "${NOW}" "${1}"
+	__git commit -m "${NOW}" "${filecommit}"
 }
 
 __gitpush() {
@@ -58,8 +59,9 @@ init() {
 
 add() {
 	[ $# == 1 ] || Error "Add [file]"
-	__gitadd $1
-	__gitcommit $1
+	local filetomanage=$1
+	__gitadd $filetomanage
+	__gitcommit $filetomanage
 	__gitpush
 }
 
