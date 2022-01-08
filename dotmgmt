@@ -52,9 +52,17 @@ __runinitscripts() {
 init() {
 	[ $# == 1 ] || Error "Init [repository]"
 	local repo=$1
-	Info "Init dotfiles with ${repo}"
-	__git clone --bare "${repo}" "${REPODIR}"
-	__git config status.showUntrackedFiles no
+	Info "Init dotfiles ${repo} in ${REPODIR}"
+	if [ ! -d ${REPODIR} ]
+	then
+		__git clone --bare "${repo}" "${REPODIR}"
+		__git config status.showUntrackedFiles no
+	fi
+
+	scriptname=$(basename $0)
+	Info "Copy script to ${HOME}/bin/${scriptname}"
+	mkdir -p "${HOME}/bin"
+	cp "$PWD/${scriptname}" "${HOME}/bin/${scriptname}"
 }
 
 add() {
