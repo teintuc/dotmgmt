@@ -91,7 +91,12 @@ commit() {
 }
 
 usage() {
-	Warn "Command not found"
+	echo "dotmgmt help:"
+	echo "	init [repo address]  - Init the repo locally"
+	echo "	add [file/directory] - Add,commit and push new file"
+	echo "	update               - Update from the remote repo to local"
+	echo "	commit               - Commit and Push all modified file from the repo"
+	echo "	status               - Status of local repo"
 }
 
 [ "${#}" == 0 ] && usage
@@ -108,7 +113,7 @@ case $cmd in
 		update
 	;;
 	commit)
-		commit "${@}"
+		commit
 	;;
 	status)
 		status
