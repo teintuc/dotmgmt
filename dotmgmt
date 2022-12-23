@@ -90,6 +90,11 @@ commit() {
 	Info "Done..."
 }
 
+cmd() {
+	[ $# == 1 ] || Error "cmd [git command]"
+	__git "$1"
+}
+
 usage() {
 	echo "dotmgmt help:"
 	echo "	init [repo address]  - Init the repo locally"
@@ -114,6 +119,9 @@ case $cmd in
 	;;
 	commit)
 		commit
+	;;
+	cmd)
+		cmd "${@}"
 	;;
 	status)
 		status
