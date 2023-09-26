@@ -10,28 +10,28 @@ REPODIR="${HOME}/.local/share/dotmgmt"
 WORKTREE="$HOME"
 
 # Log functions
-Error() { echo >&2 "$(tput bold; tput setaf 1)ERROR: ${*}$(tput sgr0)"; exit 1; }
-Warn() { echo >&2 "$(tput setaf 3)WARNING: ${*}$(tput sgr0)"; }
-Info() { echo "$(tput setaf 2)${*}$(tput sgr0)"; }
+__err() { echo >&2 "$(tput bold; tput setaf 1)ERROR: ${*}$(tput sgr0)"; exit 1; }
+__warn() { echo >&2 "$(tput setaf 3)WARNING: ${*}$(tput sgr0)"; }
+__info() { echo "$(tput setaf 2)${*}$(tput sgr0)"; }
 
 __git() {
 	git --git-dir="${REPODIR}" --work-tree="${WORKTREE}" "${@}"
 }
 
 __gitadd() {
-	Info "Adding ${1}"
+	__info "Adding ${1}"
 	__git add "${1}"
 }
 
 __gitcommit() {
 	local filecommit="${1}"
-	Info "Commiting: ${filecommit}"
+	__info "Commiting: ${filecommit}"
 	NOW=$(date +"%Y%m%d")
 	__git commit -m "${NOW}" "${filecommit}"
 }
 
 __gitpush() {
-	Info "Pushing ..."
+	__info "Pushing ..."
 	current_branch=$(__git branch | sed -n -e 's/^\* \(.*\)/\1/p')
 	__git push origin "${current_branch}"
 }
@@ -41,9 +41,9 @@ __runinitscripts() {
 }
 
 init() {
-	[ $# == 1 ] || Error "Init [repository]"
+	[ $# == 1 ] || __err "Init [repository]"
 	local repo=$1
-	Info "Init dotfiles ${repo} in ${REPODIR}"
+	__info "Init dotfiles ${repo} in ${REPODIR}"
 	if [ ! -d "${REPODIR}" ]
 	then
 		__git clone --bare "${repo}" "${REPODIR}"
@@ -51,13 +51,13 @@ init() {
 	fi
 
 	scriptname=$(basename "${0}")
-	Info "Copy script to ${HOME}/bin/${scriptname}"
+	__info "Copy script to ${HOME}/bin/${scriptname}"
 	mkdir -p "${HOME}/bin"
 	cp "$PWD/${scriptname}" "${HOME}/bin/${scriptname}"
 }
 
 add() {
-	[ $# == 1 ] || Error "Add [file]"
+	[ $# == 1 ] || __err "Add [file]"
 	local filetomanage="${1}"
 	__gitadd "${filetomanage}"
 	__gitcommit "${filetomanage}"
@@ -78,7 +78,7 @@ commit() {
 		__gitcommit "${filecommit}"
 	done
 	__gitpush
-	Info "Done..."
+	__info "Done..."
 }
 
 cmd() {
