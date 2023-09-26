@@ -29,11 +29,11 @@ __git() {
 
 __gitadd() {
 	Info "Adding ${1}"
-	__git add $1
+	__git add "${1}"
 }
 
 __gitcommit() {
-	local filecommit=$1
+	local filecommit="${1}"
 	Info "Commiting: ${filecommit}"
 	NOW=$(date +"%Y%m%d")
 	__git commit -m "${NOW}" "${filecommit}"
@@ -42,7 +42,7 @@ __gitcommit() {
 __gitpush() {
 	Info "Pushing ..."
 	current_branch=$(__git branch | sed -n -e 's/^\* \(.*\)/\1/p')
-	__git push origin $current_branch
+	__git push origin "${current_branch}"
 }
 
 __runinitscripts() {
@@ -53,13 +53,13 @@ init() {
 	[ $# == 1 ] || Error "Init [repository]"
 	local repo=$1
 	Info "Init dotfiles ${repo} in ${REPODIR}"
-	if [ ! -d ${REPODIR} ]
+	if [ ! -d "${REPODIR}" ]
 	then
 		__git clone --bare "${repo}" "${REPODIR}"
 		__git config status.showUntrackedFiles no
 	fi
 
-	scriptname=$(basename $0)
+	scriptname=$(basename "${0}")
 	Info "Copy script to ${HOME}/bin/${scriptname}"
 	mkdir -p "${HOME}/bin"
 	cp "$PWD/${scriptname}" "${HOME}/bin/${scriptname}"
@@ -67,9 +67,9 @@ init() {
 
 add() {
 	[ $# == 1 ] || Error "Add [file]"
-	local filetomanage=$1
-	__gitadd $filetomanage
-	__gitcommit $filetomanage
+	local filetomanage="${1}"
+	__gitadd "${filetomanage}"
+	__gitcommit "${filetomanage}"
 	__gitpush
 }
 
@@ -84,7 +84,7 @@ status() {
 commit() {
 	for filecommit in $(__git diff --name-only)
 	do
-		__gitcommit $filecommit
+		__gitcommit "${filecommit}"
 	done
 	__gitpush
 	Info "Done..."
@@ -104,7 +104,7 @@ usage() {
 }
 
 [ "${#}" == 0 ] && usage
-cmd=$1
+cmd="${1}"
 shift
 case $cmd in
 	init)
