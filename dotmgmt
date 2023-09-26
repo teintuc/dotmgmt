@@ -10,18 +10,9 @@ REPODIR="${HOME}/.local/share/dotmgmt"
 WORKTREE="$HOME"
 
 # Log functions
-Error() {
-    echo >&2 "$(tput bold; tput setaf 1)ERROR: ${*}$(tput sgr0)"
-    exit 1
-}
-
-Warn() {
-    echo >&2 "$(tput setaf 3)WARNING: ${*}$(tput sgr0)"
-}
-
-Info() {
-    echo "$(tput setaf 2)${*}$(tput sgr0)"
-}
+Error() { echo >&2 "$(tput bold; tput setaf 1)ERROR: ${*}$(tput sgr0)"; exit 1; }
+Warn() { echo >&2 "$(tput setaf 3)WARNING: ${*}$(tput sgr0)"; }
+Info() { echo "$(tput setaf 2)${*}$(tput sgr0)"; }
 
 __git() {
 	git --git-dir="${REPODIR}" --work-tree="${WORKTREE}" "${@}"
