@@ -6,8 +6,8 @@ set -o pipefail
 [[ ${DEBUG} ]] && set -x
 
 #Directories configuration
-REPODIR="${HOME}/.local/share/dotmgmt"
-WORKTREE="$HOME"
+: "${REPODIR:=${HOME}/.local/share/dotmgmt}"
+: "${WORKTREE:=${HOME}}"
 
 # Log functions
 __err() { echo >&2 "$(tput bold; tput setaf 1)ERROR: ${*}$(tput sgr0)"; exit 1; }
