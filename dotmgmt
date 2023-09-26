@@ -91,8 +91,7 @@ commit() {
 }
 
 cmd() {
-	[ $# == 1 ] || Error "cmd [git command]"
-	__git "$1"
+	__git "${@}"
 }
 
 usage() {
